@@ -1,0 +1,5 @@
+$env:Path = "C:\Qt\Tools\mingw1310_64\bin;C:\Qt\6.11.2\mingw_64\bin;C:\Qt\Tools\CMake_64\bin;C:\Qt\Tools\Ninja\bin;$env:Path"
+
+cmake -S D:\SSE\qt6-concurent-task-monitor -B D:\SSE\qt6-concurent-task-monitor\build -G Ninja -DCMAKE_PREFIX_PATH="C:\Qt\6.11.2\mingw_64"
+
+cmake --build D:\SSE\qt6-concurent-task-monitor\build
