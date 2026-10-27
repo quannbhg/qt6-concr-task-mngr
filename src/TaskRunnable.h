@@ -14,7 +14,8 @@ class TaskRunnable : public QObject, public QRunnable
     public:
         TaskRunnable(int id, 
             QString name, 
-            std::shared_ptr<std::atomic<bool>> cancelFlag;
+            std::shared_ptr<std::atomic<bool>> cancelFlag,
+            std::shared_ptr<std::atomic<bool>> pauseFlag
         );
         void run() override;
 
@@ -29,6 +30,7 @@ class TaskRunnable : public QObject, public QRunnable
         int m_id;
         QString m_name;
         std::shared_ptr<std::atomic<bool>> m_cancelFlag;
+        std::shared_ptr<std::atomic<bool>> m_pauseFlag;
 };
 
 #endif /* TASKRUNNABLE_H */

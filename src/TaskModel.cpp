@@ -55,6 +55,8 @@ QVariant TaskModel::data(const QModelIndex &index, int role) const
             return "Failed";
         case TASK_CANCELLED:
             return "Cancelled";
+        case TASK_PAUSED:
+            return "Paused";
         }
         return "Unknown";
     case ProgressRole:
@@ -94,6 +96,7 @@ void TaskModel::addTask(const QString &name)
     task.status = TASK_PENDING;
     task.progress = 0;
     task.cancelFlag = std::make_shared<std::atomic<bool>>(false);
+    task.pauseFlag = std::make_shared<std::atomic<bool>>(false);
 
     /* Thêm Task vào cuối danh sách, báo cho QML biết để update bằng begin và end */
     /* Add a Task to the end of the list, and notify QML to perform an update using `begin` and `end` */
@@ -104,7 +107,7 @@ void TaskModel::addTask(const QString &name)
 
     /* Tạo worker và nối signal của worker về slot của model */
     /* Create a worker and connect the worker's signal to the model's slot */
-    TaskRunnable *runnable = new TaskRunnable(task.id, task.name, task.cancelFlag);
+    TaskRunnable *runnable = new TaskRunnable(task.id, task.name, task.cancelFlag, task.pauseFlag);
     connect(runnable, &TaskRunnable::started, this, &TaskModel::onStarted);
     connect(runnable, &TaskRunnable::progressChanged, this, &TaskModel::onProgressChanged);
     connect(runnable, &TaskRunnable::completed, this, &TaskModel::onCompleted);
@@ -216,5 +219,33 @@ void TaskModel::clearFinished()
             m_tasks.removeAt(i);
             endRemoveRows();
         }
+    }
+}
+
+void TaskModel::pauseTask(int id){
+    int row = findRow(id);
+    if (row == -1){
+        return;
+    }
+
+    if (m_tasks[row].status == TASK_RUNNING){
+        *m_tasks[row].pauseFlag = true;
+        m_tasks[row].status = TASK_PAUSED;
+        updateRow(row, StatusRole);
+        updateRow(row, StatusTextRole);
+    }
+}
+
+void TaskModel::resumeTask(int id){
+    int row = findRow(id);
+    if (row == -1){
+        return;
+    }
+
+    if (m_tasks[row].status == TASK_PAUSED){
+        *m_tasks[row].pauseFlag = false;
+        m_tasks[row].status = TASK_RUNNING;
+        updateRow(row, StatusRole);
+        updateRow(row, StatusTextRole);
     }
 }

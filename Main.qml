@@ -98,9 +98,21 @@ ApplicationWindow {
                         color: "white"
                         Layout.preferredWidth: 40
                     }
+                    Button {
+                        text: statusText === "Paused" ? "Resume" : "Pause"
+                        enabled: statusText === "Running" || statusText === "Paused"
+                        onClicked: {
+                            if (statusText === "Paused") {
+                                taskModel.resumeTask(taskId)
+                            } else {
+                                taskModel.pauseTask(taskId)
+                            }
+                        }
+                    }
 
                     Button {
                         text: "Cancel"
+                        enabled: statusText == "Pending" || statusText == "Running" || statusText == "Paused"
                         onClicked: taskModel.cancelTask(taskId)
                     }
                 }

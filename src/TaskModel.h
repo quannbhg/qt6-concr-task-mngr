@@ -34,6 +34,8 @@ class TaskModel : public QAbstractListModel {
         Q_INVOKABLE void addTask(const QString &name);
         Q_INVOKABLE void cancelTask(int id);
         Q_INVOKABLE void clearFinished();
+        Q_INVOKABLE void pauseTask(int id);
+        Q_INVOKABLE void resumeTask(int id);
 
 
     private slots:
