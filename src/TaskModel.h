@@ -36,7 +36,9 @@ class TaskModel : public QAbstractListModel {
         Q_INVOKABLE void clearFinished();
         Q_INVOKABLE void pauseTask(int id);
         Q_INVOKABLE void resumeTask(int id);
-
+    
+    signals:
+        void logMessage(const QString &text, bool isError);
 
     private slots:
         /* Receive signal from workers */
@@ -49,6 +51,7 @@ class TaskModel : public QAbstractListModel {
     
     private:
         int findRow(int id);
+        QString taskLabel(int row);
         void updateRow(int row, int role);
 
         QList<Task> m_tasks;

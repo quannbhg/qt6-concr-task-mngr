@@ -25,6 +25,8 @@ qt_add_qml_module(ConcurrentTaskMonitor
         src/TaskRunnable.cpp
         src/TaskModel.h
         src/TaskModel.cpp
+        src/LogModel.h
+        src/LogModel.cpp
 )
 
 # Tell the compiler to look for .h files in the src directory

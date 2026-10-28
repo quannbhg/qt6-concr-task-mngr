@@ -117,6 +117,8 @@ void TaskModel::addTask(const QString &name)
     /* Chuyển runnable cho QThreadPool, QThreadPool sẽ tự xóa runnable sau khi chạy xong */
     /* Pass a runnable to QThreadPool; QThreadPool will automatically delete the runnable after it has finished executing */
     m_pool.start(runnable);
+    /* Log message */
+    emit logMessage("Task #" + QString::number(task.id) + " (" + task.name + ") added", false);
 }
 
 void TaskModel::cancelTask(int id)
@@ -131,8 +133,12 @@ void TaskModel::cancelTask(int id)
         m_tasks[row].status = TASK_CANCELLED;
         updateRow(row, StatusRole);
         updateRow(row, StatusTextRole);
+        /* Log message */
+        emit logMessage(taskLabel(row) + " cancelled", false);
     } else if (m_tasks[row].status == TASK_RUNNING || m_tasks[row].status == TASK_PAUSED){
         *m_tasks[row].cancelFlag = true;
+        /* Log message */
+        emit logMessage(taskLabel(row) + " cancel requested", false);
     }
 
 }
@@ -156,10 +162,14 @@ void TaskModel::onStarted(int id){
     if (row == -1){
         return;
     }
+    if (m_tasks[row].status == TASK_CANCELLED){
+        return;
+    }
 
     m_tasks[row].status = TASK_RUNNING;
     updateRow(row, StatusRole);
     updateRow(row, StatusTextRole);
+    emit logMessage(taskLabel(row) + " started", false);
 }
 
 void TaskModel::onProgressChanged(int id, int progress)
@@ -181,6 +191,7 @@ void TaskModel::onCompleted(int id)
     m_tasks[row].status = TASK_COMPLETED;
     updateRow(row, StatusRole);
     updateRow(row, StatusTextRole);
+    emit logMessage(taskLabel(row) + " completed", false);
 }
 
 void TaskModel::onFailed(int id, QString message)
@@ -194,6 +205,8 @@ void TaskModel::onFailed(int id, QString message)
     updateRow(row, StatusRole);
     updateRow(row, StatusTextRole);
     updateRow(row, ErrorRole);
+    /* Log message */
+    emit logMessage(taskLabel(row) + " failed: " + message, true);
 }
 
 void TaskModel::onCancelled(int id){
@@ -201,24 +214,37 @@ void TaskModel::onCancelled(int id){
     if (row == -1){
         return;
     }
+    if (m_tasks[row].status == TASK_CANCELLED){
+        return;
+    }
 
     m_tasks[row].status = TASK_CANCELLED;
     updateRow(row, StatusRole);
     updateRow(row, StatusTextRole);
+    /* Log message */
+    emit logMessage(taskLabel(row) + " cancelled", false);
 }
 
 void TaskModel::clearFinished()
 {
     /* Clear các task finished duyệt từ cuối lên đầu để tránh bỏ sót dòng */
     /* Clear finished tasks by iterating from the end to the beginning to avoid skipping any rows */
+    int removed = 0;
     for (int i = m_tasks.size() - 1; i >= 0; i--){
         TaskStatus status = m_tasks[i].status;
 
-        if (status == TASK_COMPLETED || status == TASK_FAILED || status == TASK_CANCELLED){
-            beginRemoveRows(QModelIndex(), i , i);
-            m_tasks.removeAt(i);
-            endRemoveRows();
-        }
+        if (status == TASK_COMPLETED ||
+            status == TASK_FAILED ||
+            status == TASK_CANCELLED){
+                beginRemoveRows(QModelIndex(), i, i);
+                m_tasks.removeAt(i);
+                endRemoveRows();
+                removed++;
+            }
+    }
+
+    if (removed > 0){
+        emit logMessage("Cleared " + QString::number(removed) + " finished task(s)", false);
     }
 }
 
@@ -233,6 +259,8 @@ void TaskModel::pauseTask(int id){
         m_tasks[row].status = TASK_PAUSED;
         updateRow(row, StatusRole);
         updateRow(row, StatusTextRole);
+        /* Log message */
+        emit logMessage(taskLabel(row) + " paused", false);
     }
 }
 
@@ -247,5 +275,11 @@ void TaskModel::resumeTask(int id){
         m_tasks[row].status = TASK_RUNNING;
         updateRow(row, StatusRole);
         updateRow(row, StatusTextRole);
+        /* Log message */
+        emit logMessage(taskLabel(row) + " resumed", false);
     }
+}
+
+QString TaskModel::taskLabel(int row){
+    return "Task #" + QString::number(m_tasks[row].id) + " (" + m_tasks[row].name + ")";
 }

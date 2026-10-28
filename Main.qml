@@ -6,13 +6,26 @@ import TaskMonitor
 ApplicationWindow {
     visible: true
     width: 800
-    height: 500
+    height: 650
     title: "Concurrent Task Monitor"
     color: "#171b26"
 
-    // Tao model (class C++ TaskModel)
+    /* Create Task Model */
     TaskModel {
         id: taskModel
+    }
+
+    /* Create Log Model */
+    LogModel {
+        id: logModel
+    }
+
+    /* Whenever TaskModel sends a signal logMessage, record it in LogModel */
+    Connections {
+        target: taskModel
+        function onLogMessage(text, isError) {
+            logModel.addLog(text, isError)
+        }
     }
 
     ColumnLayout {
@@ -115,6 +128,47 @@ ApplicationWindow {
                         enabled: statusText == "Pending" || statusText == "Running" || statusText == "Paused"
                         onClicked: taskModel.cancelTask(taskId)
                     }
+                }
+            }
+        }
+        /* Log Frame */
+        RowLayout {
+            Layout.fillWidth: true
+
+            Label {
+                text: "Log"
+                color: "white"
+                font.bold: true
+                Layout.fillWidth: true
+            }
+
+            Button {
+                text: "Clear log"
+                onClicked: logModel.clearLog()
+            }
+        }
+
+        Rectangle {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 160
+            radius: 6
+            color: "#0f121a"
+
+            ListView {
+                id: logView
+                anchors.fill: parent
+                anchors.margins: 8
+                clip: true
+                model: logModel
+
+                // Co dong log moi thi tu cuon xuong cuoi
+                onCountChanged: positionViewAtEnd()
+
+                delegate: Label {
+                    width: ListView.view.width
+                    wrapMode: Text.WordWrap
+                    text: "[" + logTime + "] " + message
+                    color: isError ? "#ff6b6b" : "#b9c3d8"
                 }
             }
         }
