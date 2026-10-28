@@ -3,3 +3,7 @@ $env:Path = "C:\Qt\Tools\mingw1310_64\bin;C:\Qt\6.11.2\mingw_64\bin;C:\Qt\Tools\
 cmake -S D:\SSE\qt6-concurent-task-monitor -B D:\SSE\qt6-concurent-task-monitor\build -G Ninja -DCMAKE_PREFIX_PATH="C:\Qt\6.11.2\mingw_64"
 
 cmake --build D:\SSE\qt6-concurent-task-monitor\build
+
+ctest --test-dir D:\SSE\qt6-concurent-task-monitor\build --output-on-failure
+
+D:\SSE\qt6-concurent-task-monitor\build\test_taskmodel.exe

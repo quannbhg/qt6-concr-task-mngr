@@ -33,7 +33,7 @@ ApplicationWindow {
         anchors.margins: 16
         spacing: 12
 
-        // Hang tren: nhap ten + nut Add
+        /* Upper row: Input name and button */
         RowLayout {
             Layout.fillWidth: true
 
@@ -59,7 +59,7 @@ ApplicationWindow {
             }
         }
 
-        // Danh sach task
+        /* List view of tasks */
         ListView {
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -78,7 +78,7 @@ ApplicationWindow {
                     anchors.margins: 10
                     spacing: 12
 
-                    // Ten + trang thai
+                    /* Task name + status */
                     ColumnLayout {
                         Layout.preferredWidth: 180
 
@@ -98,7 +98,7 @@ ApplicationWindow {
                         }
                     }
 
-                    // Thanh tien trinh chay tu 0 den 100
+                    /* Progress bar run from 0 to 100*/
                     ProgressBar {
                         Layout.fillWidth: true
                         from: 0
@@ -161,7 +161,7 @@ ApplicationWindow {
                 clip: true
                 model: logModel
 
-                // Co dong log moi thi tu cuon xuong cuoi
+                /* New log auto scrool to end*/
                 onCountChanged: positionViewAtEnd()
 
                 delegate: Label {
