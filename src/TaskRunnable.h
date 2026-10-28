@@ -18,6 +18,7 @@ class TaskRunnable : public QObject, public QRunnable
             std::shared_ptr<std::atomic<bool>> pauseFlag
         );
         void run() override;
+        void setStepDelay(int ms);
 
     signals:
         void started(int id);
@@ -31,6 +32,7 @@ class TaskRunnable : public QObject, public QRunnable
         QString m_name;
         std::shared_ptr<std::atomic<bool>> m_cancelFlag;
         std::shared_ptr<std::atomic<bool>> m_pauseFlag;
+        int m_stepDelay = 50;
 };
 
 #endif /* TASKRUNNABLE_H */

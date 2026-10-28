@@ -32,6 +32,9 @@ qt_add_qml_module(ConcurrentTaskMonitor
 # Tell the compiler to look for .h files in the src directory
 target_include_directories(ConcurrentTaskMonitor PRIVATE src)
 
+enable_testing()
+add_subdirectory(test)
+
 target_link_libraries(ConcurrentTaskMonitor
     PRIVATE
         Qt6::Quick

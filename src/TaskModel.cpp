@@ -114,6 +114,7 @@ void TaskModel::addTask(const QString &name)
     connect(runnable, &TaskRunnable::failed, this, &TaskModel::onFailed);
     connect(runnable, &TaskRunnable::cancelled, this, &TaskModel::onCancelled);
 
+    runnable->setStepDelay(m_stepDelayMs);
     /* Chuyển runnable cho QThreadPool, QThreadPool sẽ tự xóa runnable sau khi chạy xong */
     /* Pass a runnable to QThreadPool; QThreadPool will automatically delete the runnable after it has finished executing */
     m_pool.start(runnable);
@@ -282,4 +283,8 @@ void TaskModel::resumeTask(int id){
 
 QString TaskModel::taskLabel(int row){
     return "Task #" + QString::number(m_tasks[row].id) + " (" + m_tasks[row].name + ")";
+}
+
+void TaskModel::setStepDelay(int ms){
+    m_stepDelayMs = ms;
 }

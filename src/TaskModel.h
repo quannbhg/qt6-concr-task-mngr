@@ -36,6 +36,8 @@ class TaskModel : public QAbstractListModel {
         Q_INVOKABLE void clearFinished();
         Q_INVOKABLE void pauseTask(int id);
         Q_INVOKABLE void resumeTask(int id);
+        /* Used by tests: change the worker's time per step (default 50ms) */
+        void setStepDelay(int ms);
     
     signals:
         void logMessage(const QString &text, bool isError);
@@ -56,6 +58,7 @@ class TaskModel : public QAbstractListModel {
 
         QList<Task> m_tasks;
         int m_nextId = 1;
+        int m_stepDelayMs = 50;
         QThreadPool m_pool;
 
 };

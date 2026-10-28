@@ -46,9 +46,13 @@ void TaskRunnable::run(){
             return;
         }
 
-        QThread::msleep(50);
+        QThread::msleep(m_stepDelay);
         emit progressChanged(m_id, i);
     }
 
     emit completed(m_id);
+}
+
+void TaskRunnable::setStepDelay(int ms){
+    m_stepDelay = ms;
 }
